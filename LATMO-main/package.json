@@ -1,0 +1,12 @@
+{
+  "name": "futured",
+  "version": "1.0.0",
+  "description": "## Overview FuturED is a powerful, open-source note-taking and collaboration platform inspired by Notion. Built with modern web technologies, it offers a seamless experience for organizing, creating, and sharing knowledge.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

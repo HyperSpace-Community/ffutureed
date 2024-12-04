@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuturED - Your Digital Workspace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="cursor-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.24.1/themes/prism.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.24.1/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+    <style>
+        .ai-toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .ai-response {
+            padding: 12px;
+            background: #f0f7ff;
+            border-radius: 4px;
+            margin: 8px 0;
+            display: none;
+        }
+        .ai-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+
+        .loading::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #4a9eff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .error {
+            color: #e53e3e;
+            padding: 8px 12px;
+            background: #fff5f5;
+            border-radius: 4px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .success {
+            color: #38a169;
+            padding: 8px 12px;
+            background: #f0fff4;
+            border-radius: 4px;
+            border-left: 4px solid #38a169;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor">
+        <div class="cursor-ring"></div>
+        <div class="cursor-gradient"></div>
+    </div>
+    <div class="cursor-dot"></div>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>FuturED</h1>
+            </div>
+            <div class="pages">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search pages and content..." id="pageSearch">
+                        <div class="search-options">
+                            <button id="searchOptions" title="Search Options">
+                                <i class="fas fa-sliders"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-filters" style="display: none;">
+                        <label>
+                            <input type="checkbox" id="searchTitles" checked> Search in titles
+                        </label>
+                        <label>
+                            <input type="checkbox" id="searchContent" checked> Search in content
+                        </label>
+                        <label>
+                            <input type="checkbox" id="caseSensitive"> Case sensitive
+                        </label>
+                        <label>
+                            <input type="checkbox" id="wholeWord"> Whole words only
+                        </label>
+                    </div>
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                <div class="add-page" onclick="addNewPage()">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Page</span>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="toolbar">
+                <button title="Bold (Ctrl+B)" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
+                <button title="Italic (Ctrl+I)" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
+                <button title="Underline (Ctrl+U)" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
+                <button title="Heading" onclick="addHeading()"><i class="fas fa-heading"></i></button>
+                <button title="Bullet List" onclick="addList('bullet')"><i class="fas fa-list-ul"></i></button>
+                <button title="Numbered List" onclick="addList('number')"><i class="fas fa-list-ol"></i></button>
+                <button title="Code Block" onclick="addCodeBlock()"><i class="fas fa-code"></i></button>
+                <button title="Insert Link" onclick="addLink()"><i class="fas fa-link"></i></button>
+                <button title="Insert Table" onclick="insertTable()"><i class="fas fa-table"></i></button>
+                <button title="Insert Image" onclick="triggerImageUpload()"><i class="fas fa-image"></i></button>
+                <button title="Voice Input" onclick="toggleSpeechRecognition()" id="micButton"><i class="fas fa-microphone"></i></button>
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            </div>
+            <div class="ai-toolbar">
+                <button title="Ask AI Assistant" onclick="askAI()"><i class="fas fa-robot"></i> Ask AI</button>
+                <button title="Search Wikipedia" onclick="searchWikipedia()"><i class="fas fa-book"></i> Search Wikipedia</button>
+                <button title="Create Email Draft" onclick="createEmailDraft()"><i class="fas fa-envelope"></i> Create Email</button>
+                <button title="Schedule Event" onclick="scheduleEvent()"><i class="fas fa-calendar"></i> Schedule Event</button>
+            </div>
+            <div class="ai-response" id="aiResponse"></div>
+            <div class="editor" contenteditable="true" id="editor">
+                <!-- Default welcome content -->
+            </div>
+            
+            <!-- Task Template -->
+            <template id="taskTemplate">
+                <div class="task-item">
+                    <div class="task-checkbox">
+                        <input type="checkbox">
+                        <div class="custom-checkbox"></div>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title" contenteditable="true"></div>
+                        <div class="task-details">
+                            <span class="task-due-date"></span>
+                            <span class="task-priority"></span>
+                            <span class="task-category"></span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-edit" title="Edit Task">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button class="task-delete" title="Delete Task">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Note Template -->
+            <template id="noteTemplate">
+                <div class="note-item">
+                    <div class="note-header">
+                        <div class="note-title" contenteditable="true"></div>
+                        <div class="note-category"></div>
+                        <div class="note-date"></div>
+                    </div>
+                    <div class="note-content" contenteditable="true"></div>
+                    <div class="note-footer">
+                        <div class="note-tags"></div>
+                        <div class="note-actions">
+                            <button class="note-edit" title="Edit Note">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button class="note-delete" title="Delete Note">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <script>
+        // Speech Recognition Setup
+        let recognition = null;
+        let isRecognizing = false;
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onstart = function() {
+                isRecognizing = true;
+                const micButton = document.getElementById('micButton');
+                micButton.innerHTML = '<i class="fas fa-microphone" style="color: #ff4444;"></i>';
+            };
+
+            recognition.onend = function() {
+                isRecognizing = false;
+                const micButton = document.getElementById('micButton');
+                micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+            };
+
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                if (finalTranscript !== '') {
+                    const editor = document.getElementById('editor');
+                    const selection = window.getSelection();
+                    const range = selection.getRangeAt(0);
+                    const node = document.createTextNode(finalTranscript + ' ');
+                    range.insertNode(node);
+                    range.setStartAfter(node);
+                    range.setEndAfter(node);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                isRecognizing = false;
+                const micButton = document.getElementById('micButton');
+                micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+            };
+        }
+
+        function toggleSpeechRecognition() {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+                return;
+            }
+
+            if (isRecognizing) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        // Cursor functionality
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        let isInactive = false;
+        let inactivityTimer;
+
+        // Mouse movement
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+
+            // Reset inactive state
+            cursor.classList.remove('inactive');
+            cursorDot.classList.remove('inactive');
+            isInactive = false;
+            clearTimeout(inactivityTimer);
+
+            // Set new inactive timer
+            inactivityTimer = setTimeout(() => {
+                cursor.classList.add('inactive');
+                cursorDot.classList.add('inactive');
+                isInactive = true;
+            }, 5000);
+        });
+
+        // Click effects
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('clicking');
+            cursorDot.classList.add('clicking');
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('clicking');
+            cursorDot.classList.remove('clicking');
+        });
+
+        // Hover effects for interactive elements
+        const interactiveElements = document.querySelectorAll('button, a, .page, .add-page, [contenteditable="true"]');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+                cursorDot.classList.add('hover');
+                if (el.matches('[contenteditable="true"]')) {
+                    cursor.classList.add('text');
+                    cursorDot.classList.add('text');
+                }
+            });
+
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+                cursorDot.classList.remove('hover');
+                cursor.classList.remove('text');
+                cursorDot.classList.remove('text');
+            });
+        });
+    </script>
+    <script>
+        // AI Integration Functions
+        async function askAI() {
+            try {
+                const query = prompt('What would you like to ask the AI assistant?');
+                if (!query) return;
+
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = '<div class="loading">Processing your request...</div>';
+                aiResponse.style.display = 'block';
+
+                const response = await fetch('/api/ai/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get AI response');
+                }
+
+                const data = await response.json();
+                aiResponse.innerHTML = `<div class="ai-content">${marked.parse(data.result)}</div>`;
+            } catch (error) {
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function searchWikipedia() {
+            try {
+                const query = prompt('What would you like to search on Wikipedia?');
+                if (!query) return;
+
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = '<div class="loading">Searching Wikipedia...</div>';
+                aiResponse.style.display = 'block';
+
+                const response = await fetch('/api/ai/wikipedia', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to search Wikipedia');
+                }
+
+                const data = await response.json();
+                aiResponse.innerHTML = `<div class="ai-content">${marked.parse(data.result)}</div>`;
+            } catch (error) {
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function createEmailDraft() {
+            try {
+                const subject = prompt('Email subject:');
+                if (!subject) return;
+                const to = prompt('Recipient email:');
+                if (!to) return;
+                const message = prompt('Email message:');
+                if (!message) return;
+
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = '<div class="loading">Creating email draft...</div>';
+                aiResponse.style.display = 'block';
+
+                const response = await fetch('/api/ai/gmail/draft', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ subject, to, message })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create email draft');
+                }
+
+                const data = await response.json();
+                aiResponse.innerHTML = `<div class="success">Email draft created successfully!</div>`;
+            } catch (error) {
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function scheduleEvent() {
+            try {
+                const title = prompt('Event title:');
+                if (!title) return;
+                const datetime = prompt('Event date and time (YYYY-MM-DD HH:MM):');
+                if (!datetime) return;
+
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = '<div class="loading">Scheduling event...</div>';
+                aiResponse.style.display = 'block';
+
+                const response = await fetch('/api/ai/calendar/event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, datetime })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to schedule event');
+                }
+
+                const data = await response.json();
+                aiResponse.innerHTML = `<div class="success">Event scheduled successfully!</div>`;
+            } catch (error) {
+                const aiResponse = document.getElementById('aiResponse');
+                aiResponse.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.24.1/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

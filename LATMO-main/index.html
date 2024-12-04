@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuturED Spaces</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        space: ['Space Grotesk', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'gradient': 'gradient 8s linear infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'tilt': 'tilt 10s infinite linear',
+                    },
+                    keyframes: {
+                        gradient: {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            }
+                        },
+                        tilt: {
+                            '0%, 100%': { transform: 'rotate(-1deg)' },
+                            '50%': { transform: 'rotate(1deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="cursor-styles.css">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.02em;
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .card-animate {
+            animation: cardFloat 6s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(1deg); }
+            75% { transform: translateY(5px) rotate(-1deg); }
+        }
+        .card-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center,
+                rgba(56, 189, 248, 0.3) 0%,
+                transparent 50%);
+            animation: rotate 8s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+    <div class="custom-cursor">
+        <div class="cursor-ring"></div>
+        <div class="cursor-gradient"></div>
+    </div>
+    <div class="cursor-dot"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"20\" height=\"20\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M0 0h1v1H0z\" fill=\"rgba(255,255,255,0.03)\"%3E%3C/path%3E%3C/svg%3E')] opacity-20"></div>
+    
+    <div class="container mx-auto px-4 min-h-screen flex items-center justify-center relative z-10">
+        <div class="text-center">
+            <div class="glass-morphism rounded-3xl p-8 mb-12 inline-block">
+                <h1 class="text-6xl md:text-7xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 text-transparent bg-clip-text animate-gradient tracking-tight">
+                    FuturED Spaces
+                </h1>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Notes Card -->
+                <a href="notion.html" class="transform perspective-1000">
+                    <div class="glass-card p-8 rounded-2xl card-animate card-glow">
+                        <div class="text-5xl mb-4 animate-bounce">📝</div>
+                        <h2 class="text-2xl font-bold text-white mb-4 font-space tracking-tight">Notes</h2>
+                        <p class="text-gray-400 font-inter font-light">
+                            Capture and organize your thoughts with our powerful digital notebook.
+                        </p>
+                        <div class="mt-4">
+                            <span class="text-emerald-400 font-space font-medium tracking-wide animate-pulse">Explore →</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Whiteboard Card -->
+                <a href="whiteboard.html" class="transform perspective-1000">
+                    <div class="glass-card p-8 rounded-2xl card-animate card-glow" style="animation-delay: 0.3s;">
+                        <div class="text-5xl mb-4 animate-bounce" style="animation-delay: 0.1s;">🎨</div>
+                        <h2 class="text-2xl font-bold text-white mb-4 font-space tracking-tight">Whiteboard</h2>
+                        <p class="text-gray-400 font-inter font-light">
+                            Visualize your ideas with our interactive whiteboard canvas.
+                        </p>
+                        <div class="mt-4">
+                            <span class="text-cyan-400 font-space font-medium tracking-wide animate-pulse">Create →</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="mt-16 text-gray-400 text-sm glass-morphism py-3 px-6 rounded-full inline-block animate-pulse-slow">
+                <span class="font-space tracking-wide font-medium uppercase">Enhance The Way Of Learning</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cursor elements
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        
+        // Mouse position variables
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+        
+        // Smooth cursor movement
+        function updateCursorPosition(e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
+        
+        function animateCursor() {
+            // Smooth interpolation
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            
+            // Update cursor positions with smooth movement
+            requestAnimationFrame(() => {
+                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+                cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+            });
+            
+            requestAnimationFrame(animateCursor);
+        }
+        
+        // Start animation loop
+        animateCursor();
+        
+        // Mouse movement listener
+        document.addEventListener('mousemove', updateCursorPosition);
+        
+        // Hover effects for different elements
+        const interactiveElements = document.querySelectorAll('a, button, input, [role="button"]');
+        const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span');
+        
+        // Add hover effects for interactive elements
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+                cursorDot.classList.add('hover');
+                
+                // Magnetic effect
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    const distanceX = e.clientX - centerX;
+                    const distanceY = e.clientY - centerY;
+                    
+                    mouseX = centerX + distanceX * 0.3;
+                    mouseY = centerY + distanceY * 0.3;
+                });
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+                cursorDot.classList.remove('hover');
+            });
+        });
+        
+        // Add text hover effect
+        textElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('text');
+                cursorDot.classList.add('text');
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('text');
+                cursorDot.classList.remove('text');
+            });
+        });
+        
+        // Click effects
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('clicking');
+            cursorDot.classList.add('clicking');
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('clicking');
+            cursorDot.classList.remove('clicking');
+        });
+        
+        // Cursor visibility
+        let cursorTimeout;
+        
+        function showCursor() {
+            cursor.classList.remove('inactive');
+            cursorDot.classList.remove('inactive');
+        }
+        
+        function hideCursor() {
+            cursor.classList.add('inactive');
+            cursorDot.classList.add('inactive');
+        }
+        
+        // Hide cursor after 3 seconds of inactivity
+        document.addEventListener('mousemove', () => {
+            showCursor();
+            clearTimeout(cursorTimeout);
+            cursorTimeout = setTimeout(hideCursor, 3000);
+        });
+        
+        // Hide when leaving window
+        document.addEventListener('mouseleave', hideCursor);
+        document.addEventListener('mouseenter', showCursor);
+        
+        // Initialize cursor position
+        updateCursorPosition({ 
+            clientX: window.innerWidth / 2, 
+            clientY: window.innerHeight / 2 
+        });
+    </script>
+</body>
+</html>
